@@ -25,7 +25,8 @@ data_10e4 = {
         0.36553700053862914
     ]
 }
-
+global_naive_error =0.09187648542918603  # Standard Global Inversion (With Log)
+global_linear_error = 1.8128421760574922 # Classical Inversion (Without Log)
 def plot_l_comparison(data1, data2):
     """
     Plots the reconstruction error as a function of l for two different sample sizes.
@@ -59,7 +60,25 @@ def plot_l_comparison(data1, data2):
             color='tab:red',
             label='Local Reconstruction ($S=10^4$)'
         )
+        # --- Plot Baselines ---
         
+        # Global Naive (With Log)
+        plt.axhline(
+            y=naive_err, 
+            color='tab:blue', 
+            linestyle='-.', 
+            linewidth=2, 
+            label=f'Global inversion $S=10^{-5}$'
+        )
+
+        # Global Linear (Without Log)
+        plt.axhline(
+            y=linear_err, 
+            color='black', 
+            linestyle=':', 
+            linewidth=2, 
+            label=f'Global classical inversion (no log) $S=10^{-5}$'
+        )
         # Add titles and labels
         plt.title('Convergence of Local Reconstruction vs Locality Parameter $l$\n(Fixed System Size m=100)', fontsize=14)
         plt.xlabel('Locality Parameter ($l$)', fontsize=12)
