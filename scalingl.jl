@@ -1,11 +1,14 @@
+import Pkg; 
+Pkg.add(["Plots", "Distributions", "LinearAlgebra", "SparseArrays", "Statistics", "DelimitedFiles", "Dates", "Printf"])
+
 using LinearAlgebra
 using SparseArrays
 using Statistics
 using Distributions
 using Plots
-
-# Set a seed for reproducibility (optional)
-# Random.seed!(1234)
+using DelimitedFiles
+using Dates
+using Printf
 
 # ==============================================================================
 # 1. Matrix Definitions
@@ -17,10 +20,13 @@ function matrixbig(m::Int)
 end
 
 function mask(m::Int)
-    return map(x -> abs(x) > 1e-10 ? 1.0 : 0.0, matrixbig(m))
+    return map(x -> abs(x) > 1e-9 ? 1.0 : 0.0, matrixbig(m))
 end
 
-const Omega_block = [0 1; -1 0]
+# Check if defined to avoid "WARNING: redefinition"
+if !isdefined(Main, :Omega_block)
+    const Omega_block = [0 1; -1 0]
+end
 hermitize(A) = (A + A') / 2
 
 function mat_omega(n::Int)
@@ -69,13 +75,14 @@ function covestnew(samp_matrix)
     return (samp_matrix' * samp_matrix) / k
 end
 
-function inv_cov_omega_est(samp_matrix, m::Int)
-    cov_est = covestnew(samp_matrix)
+function inv_cov_omega_est(cov_matrix, m::Int)
+    # Accepts either sampled or exact covariance
     dim = 2 * m
     Omega_m = mat_omega(m)
-    return inv(2 * (cov_est - I(dim)/2) - im * Omega_m)
+    return inv(2 * (cov_matrix - I(dim)/2) - im * Omega_m)
 end
 
+# --- NAIVE (LOG) ESTIMATOR ---
 function h_est(inv_cov_omega, m::Int)
     dim = 2 * m
     Omega_m = mat_omega(m)
@@ -84,9 +91,13 @@ function h_est(inv_cov_omega, m::Int)
     return 0.5 * log(term) * iOmega
 end
 
-function h_est_jordan(inv_cov_omega, m::Int)
-    H = h_est(inv_cov_omega, m)
-    return real.(hermitize(H))
+# --- CLASSICAL (LINEAR) ESTIMATOR ---
+function h_est_classical(inv_cov_omega, m::Int)
+    return inv_cov_omega
+end
+
+function h_est_jordan(H_complex, m::Int)
+    return real.(hermitize(H_complex))
 end
 
 function h_est_zeros(H_est, m::Int)
@@ -96,7 +107,7 @@ function h_est_zeros(H_est, m::Int)
 end
 
 # ==============================================================================
-# 4. Local Reconstruction Logic (Standard)
+# 4. Local Reconstruction Logic
 # ==============================================================================
 
 function local_inv_cov_omega_est(samp_matrix, m::Int, l::Int, x::Int)
@@ -136,67 +147,141 @@ function reconstruction_inv_cov_omega_est(samp_matrix, l::Int, m::Int)
 end
 
 # ==============================================================================
-# 5. Error Functions (Updated)
+# 5. Error Functions
 # ==============================================================================
 
-# 1. Full Naive (With Logarithm)
 function error_naive_est(samp_matrix, m::Int)
     target = matrixbig(2 * m)
-    inv_cov = inv_cov_omega_est(samp_matrix, m)
-    H_estimated = h_est_jordan(inv_cov, m)
-    H_masked = h_est_zeros(H_estimated, m)
+    cov_est = covestnew(samp_matrix)
+    inv_cov = inv_cov_omega_est(cov_est, m)
+    H_estimated = h_est(inv_cov, m) # Uses Log
+    H_jordan = h_est_jordan(H_estimated, m)
+    H_masked = h_est_zeros(H_jordan, m)
     return maximum(abs.(target - H_masked))
 end
 
-
-function error_linear_est(samp_matrix, m::Int)
-    target = matrixbig(2 * m)
-    
-    # Get (2V - iOmega)^-1
-    inv_cov = inv_cov_omega_est(samp_matrix, m)
-    
-
-    
-    H_linear = real.(hermitize(inv_cov)) 
-    
-    # Apply mask and compare
-    H_masked = h_est_zeros(H_linear, m)
-    
-    return maximum(abs.(target - H_masked))
-end
-
-# 3. Local
 function error_loc_est(samp_matrix, l::Int, m::Int)
     target = matrixbig(2 * m)
     inv_cov_rec = reconstruction_inv_cov_omega_est(samp_matrix, l, m)
-    H_estimated = h_est_jordan(inv_cov_rec, m)
-    H_masked = h_est_zeros(H_estimated, m)
+    H_estimated = h_est(inv_cov_rec, m) # Uses Log
+    H_jordan = h_est_jordan(H_estimated, m)
+    H_masked = h_est_zeros(H_jordan, m)
     return maximum(abs.(target - H_masked))
 end
 
-
-# ==============================================================================
-# 6. Execution
-# ==============================================================================
-
-println("Running L-dependence check...")
-m_fixed = 100
-S_fixed = sample_data(m_fixed, 100000) 
-l_values = 2:2:10
-
-errors_local = Float64[]
-errors_linear = Float64[] 
-
-# Compute single value for Linear (Global) error as baseline
-err_lin_base = error_linear_est(S_fixed, m_fixed)
-err_naive_base = error_naive_est(S_fixed, m_fixed)
-
-println("Baseline Global Errors:")
-println("  Global (With Log): $err_naive_base")
-println("  Classical and Global (No Log):  $err_lin_base")
-
-for l in l_values
-    err = error_loc_est(S_fixed, l, m_fixed)
-    push!(errors_local, err)
-    println("l = $l, Local Error = $err")
+#Classical Exact Error Calculation ---
+function error_classical_exact(m::Int)
+    target = matrixbig(2 * m)
+    
+    # 1. Get Exact Covariance (No sampling)
+    Cov_exact = covmeas(m) 
+    
+    # 2. Get Inverse Proxy
+    inv_cov = inv_cov_omega_est(Cov_exact, m)
+    
+    # 3. Use Classical (Linear) Estimator
+    H_class = h_est_classical(inv_cov, m) 
+    
+    # 4. Standard post-processing
+    H_jordan = h_est_jordan(H_class, m)
+    H_masked = h_est_zeros(H_jordan, m)
+    
+    return maximum(abs.(target - H_masked))
 end
+
+function format_sec(s)
+    return Time(0) + Second(round(Int, s))
+end
+
+# ==============================================================================
+# 6. Main Execution
+# ==============================================================================
+
+function run_simulation()
+    println("Generating Data and Calculating Errors...")
+
+    samples_count = 10000
+    l_param = 3
+    num_averaging_runs = 3
+    filename = "simulation_results_classical.csv"
+
+    # Range 
+    m_values = 100:1:100
+
+    # Initialize file
+    open(filename, "w") do io
+        writedlm(io, [["SystemSize_m" "Avg_Naive_Error" "Avg_Local_Error" "Classical_Exact_Error" "Avg_Naive_Time_sec" "Avg_Local_Time_sec"]], ',')
+    end
+    println("Initialized $filename.")
+    println("---------------------------------------------------------------------------------------------------")
+    println(" m     | Naive Err | Local Err | Class(Exact) | T_Naive(s) | T_Local(s) | Total Time | ETA ")
+    println("---------------------------------------------------------------------------------------------------")
+
+    # Storage for plotting
+    m_values_mem = Int[]
+    errors_local_mem = Float64[]
+    errors_naive_mem = Float64[]
+    errors_class_mem = Float64[] # Store classical exact errors
+
+    t_start = time()
+    total_work_units = sum(m^3 for m in m_values)
+    completed_work_units = 0.0
+
+    for m in m_values
+        
+        # --- 1. Classical Exact Calculation (Baseline) ---
+        # This is fast, so we compute it once per m
+        class_exact_err = error_classical_exact(m)
+
+        # --- 2. Local Reconstruction (Sampled) ---
+        temp_errors_local = Float64[]
+        t_local_total = @elapsed begin
+            for k in 1:num_averaging_runs
+                S = sample_data(m, samples_count)
+                push!(temp_errors_local, error_loc_est(S, l_param, m))
+            end
+        end
+        avg_local_err = mean(temp_errors_local)
+        avg_local_time = t_local_total / num_averaging_runs
+        
+        # --- 3. Naive Estimation (Sampled) ---
+        temp_errors_naive = Float64[]
+        t_naive_total = @elapsed begin
+            for k in 1:num_averaging_runs
+                S = sample_data(m, samples_count)
+                push!(temp_errors_naive, error_naive_est(S, m))
+            end
+        end
+        avg_naive_err = mean(temp_errors_naive)
+        avg_naive_time = t_naive_total / num_averaging_runs
+        
+        # --- 4. Export Data ---
+        open(filename, "a") do io
+            writedlm(io, [m avg_naive_err avg_local_err class_exact_err avg_naive_time avg_local_time], ',')
+        end
+        
+        # --- 5. Timing ---
+        t_now = time()
+        total_elapsed = t_now - t_start
+        completed_work_units += m^3
+        fraction_done = completed_work_units / total_work_units
+        eta_str = fraction_done > 0 ? string(format_sec((total_elapsed/fraction_done) - total_elapsed)) : "Calc..."
+        
+        # Store
+        push!(m_values_mem, m)
+        push!(errors_local_mem, avg_local_err)
+        push!(errors_naive_mem, avg_naive_err)
+        push!(errors_class_mem, class_exact_err)
+        
+        Printf.@printf(" %-5d | %.2e  | %.2e  | %.2e     | %-10.2f | %-10.2f | %-10s | %s\n", 
+            m, avg_naive_err, avg_local_err, class_exact_err, avg_naive_time, avg_local_time, format_sec(total_elapsed), eta_str)
+    end
+
+    println("\nSimulation finished. Data saved to $filename")
+    
+    return m_values_mem, errors_naive_mem, errors_local_mem, errors_class_mem
+end
+
+# Run the function
+m_vals, err_naive, err_local, err_class_exact = run_simulation()
+

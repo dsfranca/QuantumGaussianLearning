@@ -178,7 +178,7 @@ function run_simulation()
     filename = "simulation_results_timing.csv"
 
     # Range 
-    m_values = 100:50:3000
+    m_values = 100:50:1100
 
     # --- ESTIMATION PREP ---
     total_work_units = sum(m^3 for m in m_values)
