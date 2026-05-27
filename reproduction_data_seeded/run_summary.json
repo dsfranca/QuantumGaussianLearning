@@ -1,0 +1,16 @@
+{
+  "elapsed_seconds": 1.156443250000052,
+  "csv_files": [
+    "l_sweep_baselines_seeded.csv",
+    "l_sweep_exact_seeded.csv",
+    "l_sweep_sampled_seeded.csv",
+    "l_sweep_sampled_seeded_all_repeats.csv",
+    "mode_sweep_ill_seeded.csv",
+    "mode_sweep_well_seeded.csv"
+  ],
+  "plot_files": [
+    "improved_plot.png",
+    "simulation_errors_plot_ill.png",
+    "simulation_errors_plot_well.png"
+  ]
+}

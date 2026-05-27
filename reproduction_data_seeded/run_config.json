@@ -1,0 +1,51 @@
+{
+  "seed": 100,
+  "beta": 0.5,
+  "ill_c": 0.0,
+  "well_c": 0.1,
+  "mode_samples": 10000,
+  "mode_repeats": 5,
+  "mode_locality": 3,
+  "m_values": [
+    100,
+    150,
+    200,
+    250,
+    300,
+    350,
+    400,
+    450,
+    500,
+    550,
+    600,
+    650,
+    700,
+    750,
+    800,
+    850,
+    900,
+    950,
+    1000,
+    1050,
+    1100,
+    1150
+  ],
+  "l_m": 100,
+  "l_samples": [
+    10000,
+    100000
+  ],
+  "l_values": [
+    2,
+    4,
+    6,
+    8,
+    10
+  ],
+  "l_repeats": 1,
+  "reuse_samples_across_l": true,
+  "data_dir": "/Users/gvq668/Documents/Code/QuantumGaussianLearning/reproduction_data_seeded",
+  "plot_dir": "/Users/gvq668/Documents/Code/QuantumGaussianLearning/reproduced_plots_seeded",
+  "quick": false,
+  "only": "locality"
+}

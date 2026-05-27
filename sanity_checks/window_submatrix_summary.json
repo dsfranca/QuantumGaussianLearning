@@ -1,0 +1,27 @@
+{
+  "modes": [
+    21,
+    22,
+    23,
+    24,
+    25
+  ],
+  "local": {
+    "max_abs_error": 0.032548576899701365,
+    "mean_abs_error": 0.002343177094849319,
+    "fro_error": 0.05618999490266443,
+    "relative_fro_error": 0.014260776984569823,
+    "target_max_abs": 1.05,
+    "estimate_max_abs": 1.0825485768997014
+  },
+  "global": {
+    "max_abs_error": 0.05272297255847014,
+    "mean_abs_error": 0.003970540017233785,
+    "fro_error": 0.09921787361736942,
+    "relative_fro_error": 0.02518106597075783,
+    "target_max_abs": 1.05,
+    "estimate_max_abs": 1.1027229725584702
+  },
+  "csv": "sanity_checks/window_submatrix_check.csv",
+  "heatmap": "sanity_checks/window_submatrix_errors.png"
+}
