@@ -1,0 +1,77 @@
+{
+  "seed": 100,
+  "m": 100,
+  "samples": 100000,
+  "beta": 0.5,
+  "locality": 4,
+  "window_modes": 5,
+  "start_mode": 1,
+  "modes": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "coordinate_labels": [
+    "1x",
+    "1p",
+    "2x",
+    "2p",
+    "3x",
+    "3p",
+    "4x",
+    "4p",
+    "5x",
+    "5p"
+  ],
+  "threshold": 0.1,
+  "conditions": [
+    {
+      "condition": "ill",
+      "label": "Ill-conditioned",
+      "c": 0.0,
+      "local_metrics": {
+        "max_abs_error": 0.012204178135043375,
+        "mean_abs_error": 0.0018444515352378055,
+        "fro_error": 0.03915773332439723,
+        "relative_fro_error": 0.010283324563397771,
+        "target_max_abs": 1.0,
+        "estimate_max_abs": 1.0103359686216224
+      },
+      "global_metrics": {
+        "max_abs_error": 0.030128595986387285,
+        "mean_abs_error": 0.003084544124572888,
+        "fro_error": 0.07186420742475973,
+        "relative_fro_error": 0.018872465454472777,
+        "target_max_abs": 1.0,
+        "estimate_max_abs": 1.0301285959863873
+      }
+    },
+    {
+      "condition": "well",
+      "label": "Well-conditioned",
+      "c": 0.1,
+      "local_metrics": {
+        "max_abs_error": 0.030194875683038802,
+        "mean_abs_error": 0.001836407460220708,
+        "fro_error": 0.04769315456465206,
+        "relative_fro_error": 0.012104315761467888,
+        "target_max_abs": 1.05,
+        "estimate_max_abs": 1.0801948756830388
+      },
+      "global_metrics": {
+        "max_abs_error": 0.05392474057303587,
+        "mean_abs_error": 0.003960797732170444,
+        "fro_error": 0.09818244952997976,
+        "relative_fro_error": 0.024918279828486524,
+        "target_max_abs": 1.05,
+        "estimate_max_abs": 1.103924740573036
+      }
+    }
+  ],
+  "error_heatmap": "condition_window_checks/condition_window_error_heatmaps.png",
+  "target_heatmap": "condition_window_checks/condition_window_target_heatmaps.png",
+  "matrix_archive": "condition_window_checks/condition_window_matrices.npz",
+  "passed": true
+}

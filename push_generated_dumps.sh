@@ -17,10 +17,10 @@ usage() {
 Usage:
   ./push_generated_dumps.sh [options] [dump_dir ...]
 
-Stages, commits, and pushes generated matrix dump directories.
+Stages, commits, and pushes generated dump or sanity-check artifact directories.
 
-If no dump_dir is given, the script uses any existing default dump folders:
-  data matrix_dumps matrix_dumps_full
+If no dump_dir is given, the script uses any existing default artifact folders:
+  data matrix_dumps matrix_dumps_full condition_window_checks
 
 Options:
   -m, --message TEXT       Commit message.
@@ -108,7 +108,7 @@ done
 git rev-parse --is-inside-work-tree >/dev/null 2>&1 || die "not inside a git repository"
 
 if [[ ${#dump_paths[@]} -eq 0 ]]; then
-  for candidate in data matrix_dumps matrix_dumps_full; do
+  for candidate in data matrix_dumps matrix_dumps_full condition_window_checks; do
     [[ -d "$candidate" ]] && dump_paths+=("$candidate")
   done
 fi

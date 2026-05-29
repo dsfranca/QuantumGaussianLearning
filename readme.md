@@ -19,6 +19,7 @@ The code focuses on the one-dimensional bosonic Gaussian Hamiltonian examples us
 | `qgl_reproduce.py` | Core Python implementation: covariance generation, sampling, global/local reconstruction, error metrics, and plotting helpers. |
 | `run_seeded_reproduction.py` | Command-line pipeline that regenerates seeded CSV data and PNG figures. |
 | `dump_plot_matrices.py` | Exports labeled NPZ archives containing the matrices used by the seeded plot pipeline. |
+| `compare_condition_window_heatmaps.py` | Generates compact ill/well first-mode window heatmaps and matrix snippets. |
 | `push_generated_dumps.sh` | Helper script for staging, committing, and pushing generated dump directories. |
 | `reproduce_natcomm_plots.ipynb` | Notebook version of the reproduction workflow, with switches for expensive reruns. |
 | `sanity_check_window.py` | Small-window diagnostic comparing reconstructed Hamiltonian submatrices against the target. |
@@ -115,6 +116,14 @@ This writes:
 - `sanity_checks/window_submatrix_summary.json`
 
 The command exits with status `0` if the local max absolute error is below the configured threshold.
+
+To compare the first five modes for the ill- and well-conditioned cases in one compact artifact:
+
+```bash
+python compare_condition_window_heatmaps.py --seed 100
+```
+
+This writes `condition_window_checks/condition_window_error_heatmaps.png`, `condition_window_target_heatmaps.png`, small CSV tables, a compact `.npz` matrix archive, and a JSON summary.
 
 ## Matrix Data Dump
 
