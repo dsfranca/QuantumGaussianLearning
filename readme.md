@@ -18,6 +18,8 @@ The code focuses on the one-dimensional bosonic Gaussian Hamiltonian examples us
 | --- | --- |
 | `qgl_reproduce.py` | Core Python implementation: covariance generation, sampling, global/local reconstruction, error metrics, and plotting helpers. |
 | `run_seeded_reproduction.py` | Command-line pipeline that regenerates seeded CSV data and PNG figures. |
+| `dump_plot_matrices.py` | Exports labeled NPZ archives containing the matrices used by the seeded plot pipeline. |
+| `push_generated_dumps.sh` | Helper script for staging, committing, and pushing generated dump directories. |
 | `reproduce_natcomm_plots.ipynb` | Notebook version of the reproduction workflow, with switches for expensive reruns. |
 | `sanity_check_window.py` | Small-window diagnostic comparing reconstructed Hamiltonian submatrices against the target. |
 | `reproduction_data/` | Published/historical values used for immediate plot reproduction. |
@@ -113,6 +115,41 @@ This writes:
 - `sanity_checks/window_submatrix_summary.json`
 
 The command exits with status `0` if the local max absolute error is below the configured threshold.
+
+## Matrix Data Dump
+
+For a compact audit dump, export a deterministic 5-mode window plus the corresponding full-matrix error values:
+
+```bash
+python dump_plot_matrices.py --scope audit --seed 100 --output-dir data
+```
+
+This writes a small labeled `.npz` archive, `audit_errors.csv`, `manifest.csv`, `manifest.json`, and `run_config.json` under `data/`. The archive contains a `labels_json` entry describing the arrays inside it.
+
+To export the full matrices behind the seeded locality plot at `m = 100`:
+
+```bash
+python dump_plot_matrices.py --seed 100
+```
+
+This writes labeled `.npz` archives plus `manifest.csv`, `manifest.json`, and `run_config.json` under `matrix_dumps/`.
+
+The full mode-sweep dump is much larger:
+
+```bash
+python dump_plot_matrices.py --scope all --output-dir matrix_dumps_full
+```
+
+Add `--include-samples` only if you also need the raw Gaussian samples, since those files can become very large.
+
+To push generated dumps to the configured Git remote:
+
+```bash
+./push_generated_dumps.sh --dry-run
+./push_generated_dumps.sh -y data
+```
+
+The script refuses very large dumps by default and rejects files near GitHub's 100 MB file limit. Use `--include-code` if the same commit should also include the reproduction scripts and README updates.
 
 ## Legacy Julia Scripts
 

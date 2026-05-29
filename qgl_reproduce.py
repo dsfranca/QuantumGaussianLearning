@@ -97,7 +97,7 @@ class LSweepConfig:
 def find_repo_root(start: Path | None = None) -> Path:
     path = Path.cwd() if start is None else Path(start).resolve()
     for candidate in [path, *path.parents]:
-        if (candidate / "NatCommResub").is_dir() and (candidate / "plotterl.py").exists():
+        if (candidate / "qgl_reproduce.py").exists() and (candidate / "plotterl.py").exists():
             return candidate
     raise RuntimeError("Could not find repository root from current working directory.")
 
