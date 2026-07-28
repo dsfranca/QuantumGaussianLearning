@@ -17,6 +17,17 @@ from scipy.linalg import expm, inv, logm
 import matplotlib.pyplot as plt
 
 
+plt.rcParams.update(
+    {
+        "font.family": "sans-serif",
+        "pdf.fonttype": 42,
+        "ps.fonttype": 42,
+        "savefig.facecolor": "white",
+        "figure.facecolor": "white",
+    }
+)
+
+
 DEFAULT_BETA = 0.5
 DEFAULT_MODE_M_VALUES = list(range(100, 1151, 50))
 DEFAULT_L_VALUES = [2, 4, 6, 8, 10]
@@ -62,11 +73,11 @@ L_PUBLISHED_ROWS = [
 
 
 EXACT_L_PUBLISHED_ROWS = [
-    {"l": 2, "Error": 0.11653511141870965},
-    {"l": 4, "Error": 2.3904821522258146e-7},
-    {"l": 6, "Error": 4.9713788641270185e-11},
-    {"l": 8, "Error": 1.354472090042691e-14},
-    {"l": 10, "Error": 9.769962616701378e-15},
+    {"l": 2, "Error": 0.0941186151675173},
+    {"l": 4, "Error": 0.0003208713183127099},
+    {"l": 6, "Error": 2.1949079975769337e-7},
+    {"l": 8, "Error": 4.619926663451679e-11},
+    {"l": 10, "Error": 1.7763568394002505e-14},
 ]
 
 
@@ -224,16 +235,30 @@ def local_inverse_reconstruction(cov_matrix: np.ndarray, m: int, locality: int) 
     ]
     reconstructed = np.zeros((dim, dim), dtype=complex)
 
-    for j in range(1, m + 1):
-        local_matrix = local_matrices[j - 1]
-        base = max(2 * (j - 1) - 2 * locality, 0)
-        for k in range(j, min(j + locality, m) + 1):
-            r_start = 2 * (j - 1) - base
-            c_start = 2 * (k - 1) - base
-            block_2x2 = local_matrix[r_start:r_start + 2, c_start:c_start + 2]
-            reconstructed[2 * j - 2:2 * j, 2 * k - 2:2 * k] = block_2x2
-            if j != k:
-                reconstructed[2 * k - 2:2 * k, 2 * j - 2:2 * j] = block_2x2.conj().T
+    for i in range(1, m + 1):
+        local_i = local_matrices[i - 1]
+        base_i = max(2 * (i - 1) - 2 * locality, 0)
+        row_i = 2 * (i - 1) - base_i
+
+        for j in range(i, min(i + locality, m) + 1):
+            col_j_from_i = 2 * (j - 1) - base_i
+            block_from_i = local_i[
+                row_i:row_i + 2,
+                col_j_from_i:col_j_from_i + 2,
+            ]
+
+            local_j = local_matrices[j - 1]
+            base_j = max(2 * (j - 1) - 2 * locality, 0)
+            row_j = 2 * (j - 1) - base_j
+            col_i_from_j = 2 * (i - 1) - base_j
+            block_from_j = local_j[
+                row_j:row_j + 2,
+                col_i_from_j:col_i_from_j + 2,
+            ].conj().T
+
+            block = (block_from_i + block_from_j) / 2
+            reconstructed[2 * i - 2:2 * i, 2 * j - 2:2 * j] = block
+            reconstructed[2 * j - 2:2 * j, 2 * i - 2:2 * i] = block.conj().T
 
     return hermitize(reconstructed)
 
@@ -394,7 +419,7 @@ def plot_mode_sweep(df: pd.DataFrame, condition_label: str, output_path: Path) -
         marker="o",
         linestyle="-",
         linewidth=2,
-        color="tab:blue",
+        color="#0072B2",
         label="Average Error Global Reconstruction",
     )
     ax.plot(
@@ -403,7 +428,7 @@ def plot_mode_sweep(df: pd.DataFrame, condition_label: str, output_path: Path) -
         marker="s",
         linestyle="--",
         linewidth=2,
-        color="tab:orange",
+        color="#E69F00",
         label="Average Error Local Reconstruction",
     )
     ax.set_title(f"Reconstruction Errors vs Number of Modes for 1D, {condition_label} Hamiltonian", fontsize=16)
@@ -411,9 +436,11 @@ def plot_mode_sweep(df: pd.DataFrame, condition_label: str, output_path: Path) -
     ax.set_ylabel("Average Reconstruction Error", fontsize=12)
     ax.grid(True, linestyle=":", alpha=0.7)
     ax.legend()
-    ax.set_ylim(0, 3)
+    largest_error = max(df["Avg_Naive_Error"].max(), df["Avg_Local_Error"].max())
+    ax.set_ylim(0, max(3.0, 1.05 * largest_error))
     fig.tight_layout()
     fig.savefig(output_path, dpi=300)
+    fig.savefig(output_path.with_suffix(".pdf"), bbox_inches="tight")
     return fig, ax
 
 
@@ -454,7 +481,7 @@ def plot_l_sweep(
         marker="o",
         linestyle="-",
         linewidth=2,
-        color="#d62728",
+        color="#E69F00",
         label=rf"Local Rec. (Sampled, $N={_sample_count_latex(low_n)}$)",
     )
     ax.plot(
@@ -463,12 +490,12 @@ def plot_l_sweep(
         marker="o",
         linestyle="-",
         linewidth=2,
-        color="#2ca02c",
+        color="#0072B2",
         label=rf"Local Rec. (Sampled, $N={_sample_count_latex(high_n)}$)",
     )
     ax.axhline(
         y=global_sampled_error,
-        color="#1f77b4",
+        color="#4D4D4D",
         linestyle="--",
         linewidth=1.5,
         alpha=0.7,
@@ -519,6 +546,7 @@ def plot_l_sweep(
 
     fig.tight_layout()
     fig.savefig(output_path, dpi=300)
+    fig.savefig(output_path.with_suffix(".pdf"), bbox_inches="tight")
     return fig, ax
 
 
