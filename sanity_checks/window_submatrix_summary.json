@@ -7,12 +7,12 @@
     25
   ],
   "local": {
-    "max_abs_error": 0.032548576899701365,
-    "mean_abs_error": 0.002343177094849319,
-    "fro_error": 0.05618999490266443,
-    "relative_fro_error": 0.014260776984569823,
+    "max_abs_error": 0.03094908587525369,
+    "mean_abs_error": 0.002288656815211746,
+    "fro_error": 0.05502567836919367,
+    "relative_fro_error": 0.013965278498548665,
     "target_max_abs": 1.05,
-    "estimate_max_abs": 1.0825485768997014
+    "estimate_max_abs": 1.0809490858752537
   },
   "global": {
     "max_abs_error": 0.05272297255847014,

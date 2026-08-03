@@ -4,15 +4,18 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import platform
 import tempfile
 from pathlib import Path
 from time import perf_counter
 
 os.environ.setdefault("MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "qgl_matplotlib_cache"))
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import scipy
 
 import qgl_reproduce as qgl
 
@@ -44,7 +47,11 @@ def parse_args() -> argparse.Namespace:
         help="Use independent samples for every l instead of reusing one covariance estimate per sample count.",
     )
     parser.add_argument("--data-dir", default="reproduction_data_seeded", help="Directory for generated CSV files.")
-    parser.add_argument("--plot-dir", default="reproduced_plots_seeded", help="Directory for generated PNG files.")
+    parser.add_argument(
+        "--plot-dir",
+        default="reproduced_plots_seeded",
+        help="Directory for generated PNG and vector PDF figures.",
+    )
     parser.add_argument(
         "--only",
         choices=["all", "mode", "locality"],
@@ -123,10 +130,17 @@ def main() -> None:
         "l_values": args.l_values,
         "l_repeats": args.l_repeats,
         "reuse_samples_across_l": not args.independent_l_samples,
-        "data_dir": str(data_dir),
-        "plot_dir": str(plot_dir),
+        "data_dir": str(Path(args.data_dir)),
+        "plot_dir": str(Path(args.plot_dir)),
         "quick": args.quick,
         "only": args.only,
+        "software_versions": {
+            "python": platform.python_version(),
+            "numpy": np.__version__,
+            "scipy": scipy.__version__,
+            "pandas": pd.__version__,
+            "matplotlib": matplotlib.__version__,
+        },
     }
     (data_dir / "run_config.json").write_text(json.dumps(run_config, indent=2) + "\n")
 
@@ -174,9 +188,9 @@ def main() -> None:
         well_df = qgl.run_mode_sweep(well_config, data_dir / "mode_sweep_well_seeded.csv", progress=True)
 
         print("\nWriting mode-sweep plots...")
-        qgl.plot_mode_sweep(ill_df, "ill-conditioned", plot_dir / "simulation_errors_plot_ill.png")
+        qgl.plot_mode_sweep(ill_df, "ill-conditioned", plot_dir / "simulation_errors_plot_ill")
         plt.close("all")
-        qgl.plot_mode_sweep(well_df, "well-conditioned", plot_dir / "simulation_errors_plot_well.png")
+        qgl.plot_mode_sweep(well_df, "well-conditioned", plot_dir / "simulation_errors_plot_well")
         plt.close("all")
 
     if args.only in {"all", "locality"}:
@@ -220,7 +234,7 @@ def main() -> None:
             exact_l_df,
             global_sampled_error=global_sampled_error,
             classical_exact=classical_exact_error,
-            output_path=plot_dir / "improved_plot.png",
+            output_path=plot_dir / "improved_plot",
         )
         plt.close("all")
 
@@ -228,7 +242,9 @@ def main() -> None:
     summary = {
         "elapsed_seconds": elapsed,
         "csv_files": sorted(path.name for path in data_dir.glob("*.csv")),
-        "plot_files": sorted(path.name for path in plot_dir.glob("*.png")),
+        "plot_files": sorted(
+            path.name for path in plot_dir.iterdir() if path.suffix.lower() in {".png", ".pdf"}
+        ),
     }
     (data_dir / "run_summary.json").write_text(json.dumps(summary, indent=2) + "\n")
 

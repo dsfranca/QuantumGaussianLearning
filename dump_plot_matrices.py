@@ -922,7 +922,7 @@ def main() -> None:
     run_config = {
         "seed": args.seed,
         "scope": args.scope,
-        "output_dir": str(output_dir),
+        "output_dir": str(Path(args.output_dir)),
         "beta": args.beta,
         "ill_c": args.ill_c,
         "well_c": args.well_c,

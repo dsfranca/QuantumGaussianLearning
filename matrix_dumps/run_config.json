@@ -4,7 +4,7 @@
   "audit_window_start": null,
   "beta": 0.5,
   "compressed": true,
-  "elapsed_seconds": 0.9245190420042491,
+  "elapsed_seconds": 0.9587082080543041,
   "format": "NPZ archives with a labels_json array in every archive plus manifest.csv/manifest.json.",
   "ill_c": 0.0,
   "include_samples": false,
@@ -49,11 +49,11 @@
   "mode_locality": 3,
   "mode_repeats": 5,
   "mode_samples": 10000,
-  "output_dir": "/Users/gvq668/Documents/Code/QuantumGaussianLearning/matrix_dumps",
+  "output_dir": "matrix_dumps",
   "quick": false,
   "reuse_samples_across_l": true,
   "scope": "locality",
   "seed": 100,
-  "total_archive_bytes": 3268067,
+  "total_archive_bytes": 3271305,
   "well_c": 0.1
 }

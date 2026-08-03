@@ -2,6 +2,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
+
+plt.rcParams.update({"font.family": "DejaVu Sans", "pdf.fonttype": 42, "ps.fonttype": 42})
+
 # --- Data Definitions ---
 data_10e5 = {
     'l': [2, 4, 6, 8, 10],
@@ -96,6 +99,11 @@ def plot_with_upper_left_inset(data1, data2, data3):
 
         plt.tight_layout()
         plt.savefig('inset_exact_comparison.png', dpi=300)
+        plt.savefig(
+            'inset_exact_comparison.pdf',
+            bbox_inches='tight',
+            metadata={"Creator": "QuantumGaussianLearning", "CreationDate": None, "ModDate": None},
+        )
         plt.show()
 
 if __name__ == "__main__":

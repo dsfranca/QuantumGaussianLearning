@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 plt.rcParams.update(
     {
-        "font.family": "sans-serif",
+        "font.family": "DejaVu Sans",
         "pdf.fonttype": 42,
         "ps.fonttype": 42,
         "savefig.facecolor": "white",
@@ -439,8 +439,12 @@ def plot_mode_sweep(df: pd.DataFrame, condition_label: str, output_path: Path) -
     largest_error = max(df["Avg_Naive_Error"].max(), df["Avg_Local_Error"].max())
     ax.set_ylim(0, max(3.0, 1.05 * largest_error))
     fig.tight_layout()
-    fig.savefig(output_path, dpi=300)
-    fig.savefig(output_path.with_suffix(".pdf"), bbox_inches="tight")
+    fig.savefig(output_path.with_suffix(".png"), dpi=300)
+    fig.savefig(
+        output_path.with_suffix(".pdf"),
+        bbox_inches="tight",
+        metadata={"Creator": "QuantumGaussianLearning", "CreationDate": None, "ModDate": None},
+    )
     return fig, ax
 
 
@@ -545,8 +549,12 @@ def plot_l_sweep(
     ax_ins.legend(fontsize=7, loc="lower left")
 
     fig.tight_layout()
-    fig.savefig(output_path, dpi=300)
-    fig.savefig(output_path.with_suffix(".pdf"), bbox_inches="tight")
+    fig.savefig(output_path.with_suffix(".png"), dpi=300)
+    fig.savefig(
+        output_path.with_suffix(".pdf"),
+        bbox_inches="tight",
+        metadata={"Creator": "QuantumGaussianLearning", "CreationDate": None, "ModDate": None},
+    )
     return fig, ax
 
 

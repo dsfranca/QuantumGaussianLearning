@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import io
 
 
+plt.rcParams.update({"font.family": "DejaVu Sans", "pdf.fonttype": 42, "ps.fonttype": 42})
+
+
 csv_data = """SystemSize_m,Avg_Naive_Error,Avg_Local_Error,Avg_Naive_Time_sec,Avg_Local_Time_sec
 100.0,0.4010972029436672,0.2631239762907575,2.400156587,3.396325023333333
 150.0,0.3928258789044998,0.2748748531673381,3.9310780783333334,7.532880201666667
@@ -78,6 +81,11 @@ def plot_results(data_string):
         print("Displaying plot...")
         output_filename = 'simulation_errors_plot_ill.png'
         plt.savefig(output_filename, dpi=300)
+        plt.savefig(
+            'simulation_errors_plot_ill.pdf',
+            bbox_inches='tight',
+            metadata={"Creator": "QuantumGaussianLearning", "CreationDate": None, "ModDate": None},
+        )
         plt.show()
 
     except Exception as e:

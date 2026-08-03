@@ -1,5 +1,5 @@
 {
-  "seed": 100,
+  "seed": 20240527,
   "beta": 0.5,
   "ill_c": 0.0,
   "well_c": 0.1,
@@ -44,8 +44,15 @@
   ],
   "l_repeats": 1,
   "reuse_samples_across_l": true,
-  "data_dir": "/Users/gvq668/Documents/Code/QuantumGaussianLearning/reproduction_data_seeded",
-  "plot_dir": "/Users/gvq668/Documents/Code/QuantumGaussianLearning/reproduced_plots_seeded",
+  "data_dir": "reproduction_data_seeded",
+  "plot_dir": "reproduced_plots_seeded",
   "quick": false,
-  "only": "locality"
+  "only": "all",
+  "software_versions": {
+    "python": "3.14.4",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "pandas": "3.0.3",
+    "matplotlib": "3.10.9"
+  }
 }

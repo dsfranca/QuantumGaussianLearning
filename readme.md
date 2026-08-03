@@ -14,7 +14,8 @@ The experiments compare global plug-in Hamiltonian reconstruction with local inv
 | Mode sweep, well-conditioned chain | `c = 0.1`, `N = 10^4`, `l = 3`, `m = 100, 150, ..., 1150`, five realizations | `simulation_errors_plot_well.png` and `.pdf` |
 | Locality sweep, well-conditioned chain | `m = 100`, `N = 10^4` and `10^5`, `l = 2, 4, 6, 8, 10`, one realization per sample count | `improved_plot.png` and `.pdf` |
 
-All experiments use the inverse-temperature prefactor `beta = 0.5` by default.
+All experiments use the inverse-temperature prefactor `beta = 0.5` and base random seed `20240527` by default.
+The committed manuscript-scale figures are stored in `reproduced_plots_seeded/` in both formats.
 
 ## Repository layout
 
@@ -72,7 +73,8 @@ python run_seeded_reproduction.py --only locality \
   --plot-dir runs/locality/plots
 ```
 
-Each command uses a separate output directory so that artifacts from distinct runs are not mixed. The pipeline writes numerical tables and run metadata to the selected data directory and PNG and PDF figures to the selected plot directory.
+Each command uses a separate output directory so that artifacts from distinct runs are not mixed. The pipeline writes numerical tables and run metadata, including parameters and software versions, to the selected data directory and PNG and PDF figures to the selected plot directory.
+The PDF files are vector graphics intended for manuscript preparation; the PNG files are matching high-resolution previews generated from the same figure objects.
 
 ### Benchmark evaluation convention
 

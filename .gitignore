@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# User-selected run directories from the README examples.
+runs/
+
+# Notebook scratch outputs; canonical seeded artifacts remain tracked.
+reproduction_data/
+reproduced_plots/
