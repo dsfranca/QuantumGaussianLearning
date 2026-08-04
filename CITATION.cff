@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "Numerical experiments for Gaussian Hamiltonian learning"
+type: software
+authors:
+  - family-names: "Fanizza"
+    given-names: "Marco"
+  - family-names: "Rouzé"
+    given-names: "Cambyse"
+  - family-names: "França"
+    given-names: "Daniel Stilck"
+repository-code: "https://github.com/dsfranca/QuantumGaussianLearning"
+version: "1.1"
+date-released: "2026-08-04"
