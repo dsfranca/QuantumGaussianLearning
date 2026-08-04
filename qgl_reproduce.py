@@ -29,7 +29,7 @@ plt.rcParams.update(
 
 
 DEFAULT_BETA = 0.5
-DEFAULT_MODE_M_VALUES = list(range(100, 1151, 50))
+DEFAULT_MODE_M_VALUES = list(range(100, 1201, 50))
 DEFAULT_L_VALUES = [2, 4, 6, 8, 10]
 
 

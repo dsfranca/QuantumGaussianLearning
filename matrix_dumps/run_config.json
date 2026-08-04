@@ -4,7 +4,7 @@
   "audit_window_start": null,
   "beta": 0.5,
   "compressed": true,
-  "elapsed_seconds": 0.9587082080543041,
+  "elapsed_seconds": 0.9527076670201495,
   "format": "NPZ archives with a labels_json array in every archive plus manifest.csv/manifest.json.",
   "ill_c": 0.0,
   "include_samples": false,
@@ -43,7 +43,8 @@
     1000,
     1050,
     1100,
-    1150
+    1150,
+    1200
   ],
   "manifest_rows": 18,
   "mode_locality": 3,
@@ -54,6 +55,6 @@
   "reuse_samples_across_l": true,
   "scope": "locality",
   "seed": 100,
-  "total_archive_bytes": 3271305,
+  "total_archive_bytes": 3271311,
   "well_c": 0.1
 }

@@ -35,7 +35,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--mode-repeats", type=int, default=5, help="Realizations averaged for each mode-sweep point.")
     parser.add_argument("--mode-locality", type=int, default=3, help="Locality parameter used in the mode-sweep local reconstruction.")
     parser.add_argument("--m-start", type=int, default=100, help="First m value in the mode sweep.")
-    parser.add_argument("--m-stop", type=int, default=1150, help="Last m value in the mode sweep, inclusive.")
+    parser.add_argument("--m-stop", type=int, default=1200, help="Last m value in the mode sweep, inclusive.")
     parser.add_argument("--m-step", type=int, default=50, help="Step size for the mode sweep.")
     parser.add_argument("--l-m", type=int, default=100, help="System size for the locality sweep.")
     parser.add_argument("--l-samples", type=int, nargs="+", default=[10_000, 100_000], help="Sample counts for the locality sweep.")
